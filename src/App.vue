@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <router-view/>
+    <router-view />
   </div>
 </template>
 
@@ -30,7 +30,7 @@
 }
 
 .el-radio__input.is-checked + .el-radio__label {
-  color: #409EFF !important;
+  color: #409eff !important;
 }
 
 .problem-section {
@@ -39,12 +39,12 @@
       //font-size: 20px !important;
     }
   }
-  .problem-label{
+  .problem-label {
     font-size: 0.43rem !important;
     width: 2rem !important;
     margin-bottom: 2px !important;
   }
-  .problem-item{
+  .problem-item {
     margin-bottom: 2px !important;
     padding: 2px !important;
   }

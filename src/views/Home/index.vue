@@ -662,7 +662,7 @@ export default {
 
       // 查找对应的班组数据
       const selectedTeam = this.respTeamOptions.find(
-        (team) => team.value === problemData.respTeam,
+        (team) => team.value === problemData.respTeam
       );
       if (selectedTeam && selectedTeam.employee) {
         problemData.respEmployee = selectedTeam.employee;
@@ -683,11 +683,12 @@ export default {
         };
         window.InspectionOnlineSingleSave(saveData, (res) => {
           this.inspectionList.find(
-            (item) => item.dispositionId === saveData.id,
+            (item) => item.dispositionId === saveData.id
           ).testBy = res.testBy;
         });
       } else if (type === "SaveQuestion") {
         this.dialogProblemVisible = false;
+        this.syncProblemData();
         saveData = {
           flag: type,
           id: this.dialogProblemData.questionId,
@@ -698,7 +699,7 @@ export default {
         };
         window.InspectionOnlineSingleSave(saveData, (res) => {
           this.problemList.find(
-            (item) => item.questionId === saveData.id,
+            (item) => item.questionId === saveData.id
           ).testBy = res.testBy;
         });
       }
@@ -732,6 +733,7 @@ export default {
         type: "warning",
       })
         .then(() => {
+          this.syncProblemData();
           let pushData = {
             ...this.originalData,
           };
@@ -743,18 +745,21 @@ export default {
                   item.dispositionId === data.dispositionId &&
                   item.testAttribute !== "OK" &&
                   item.dxDesc !== "" &&
-                  item.dispositionDesc !== "",
+                  item.dispositionDesc !== ""
               ),
               questionItem: [],
             };
             data.pushStatus = 1;
           } else if (type === "problem") {
+            const currentProblem = this.originalData.questionItem.find(
+              (item) => item.questionId === data.questionId
+            );
             pushData = {
               ...pushData,
-              questionItem: this.originalData.questionItem.filter(
-                (item) =>
-                  item.questionId === data.questionId && item.question !== "",
-              ),
+              questionItem:
+                currentProblem && currentProblem.question !== ""
+                  ? [currentProblem]
+                  : [],
               dispositionItem: [],
             };
             data.pushStatus = 1;
@@ -884,6 +889,8 @@ export default {
 
         return {
           ...item,
+          respTeam: item.respTeam || "",
+          respEmployee: item.respEmployee || "",
           imageList: imageList,
           pushStatus: 0,
         };
@@ -920,7 +927,7 @@ export default {
     handleConclusionChange(inspection) {
       // 更新原始数据
       const originalItem = this.originalData.dispositionItem.find(
-        (item) => item.dispositionId === inspection.dispositionId,
+        (item) => item.dispositionId === inspection.dispositionId
       );
       if (originalItem) {
         originalItem.testAttribute = inspection.testAttribute;
@@ -946,6 +953,8 @@ export default {
           questionId: response.questionId,
           question: "",
           imgs: "",
+          respTeam: "",
+          respEmployee: "",
           testBy: response.testBy,
           isHandle: 0,
           handleReMark: "",
@@ -979,13 +988,13 @@ export default {
       window.questionDel(params, (response) => {
         // 使用 filter 方法删除，避免索引问题
         this.problemList = this.problemList.filter(
-          (problem) => problem.questionId !== response.questionId,
+          (problem) => problem.questionId !== response.questionId
         );
         // 同时从 originalData 中删除
         if (this.originalData.questionItem) {
           this.originalData.questionItem =
             this.originalData.questionItem.filter(
-              (item) => item.questionId !== response.questionId,
+              (item) => item.questionId !== response.questionId
             );
         }
         console.log(this.originalData.questionItem, "删除问题后的数据");
@@ -1040,13 +1049,13 @@ export default {
       window.inspectionDel(params, (response) => {
         // 使用 filter 方法删除，避免索引问题
         this.inspectionList = this.inspectionList.filter(
-          (inspection) => inspection.dispositionId !== response.dispositionId,
+          (inspection) => inspection.dispositionId !== response.dispositionId
         );
         // 同时从 originalData 中删除
         if (this.originalData.dispositionItem) {
           this.originalData.dispositionItem =
             this.originalData.dispositionItem.filter(
-              (item) => item.dispositionId !== response.dispositionId,
+              (item) => item.dispositionId !== response.dispositionId
             );
         }
         console.log(this.originalData.dispositionItem, "删除问题后的数据");
@@ -1102,7 +1111,7 @@ export default {
     async saveData() {
       if (
         this.originalData.dispositionItem.filter(
-          (x) => x.dispositionDesc.trim() === "" && x.testBy === this.Operator,
+          (x) => x.dispositionDesc.trim() === "" && x.testBy === this.Operator
         ).length > 0
       ) {
         this.$message({
@@ -1115,7 +1124,7 @@ export default {
       }
       if (
         this.originalData.questionItem.filter(
-          (x) => x.question.trim() === "" && x.testBy === this.Operator,
+          (x) => x.question.trim() === "" && x.testBy === this.Operator
         ).length > 0
       ) {
         this.$message({
@@ -1167,7 +1176,7 @@ export default {
         // 查找原始数据中是否已存在该问题
         const originalProblem =
           this.originalData.questionItem?.find(
-            (p) => p.questionId === problem.questionId,
+            (p) => p.questionId === problem.questionId
           ) || {};
 
         return {
@@ -1175,6 +1184,8 @@ export default {
           questionId: problem.questionId,
           question: problem.question,
           imgs: problem.imgs,
+          respTeam: problem.respTeam,
+          respEmployee: problem.respEmployee,
           imageList: problem.imageList,
           // 保留其他字段
           testBy: problem.testBy || originalProblem.testBy,
@@ -1193,7 +1204,7 @@ export default {
     handleProblemInputChange(problem, value) {
       // 同步到原始数据
       const originalProblem = this.originalData.questionItem.find(
-        (p) => p.questionId === problem.questionId,
+        (p) => p.questionId === problem.questionId
       );
       if (originalProblem) {
         originalProblem.question = value;
@@ -1203,7 +1214,7 @@ export default {
     handleInspectionDescInputChange(inspection, value) {
       // 同步到原始数据
       const originalInspection = this.originalData.dispositionItem.find(
-        (p) => p.dispositionId === inspection.dispositionId,
+        (p) => p.dispositionId === inspection.dispositionId
       );
       if (originalInspection) {
         originalInspection.dispositionDesc = value;
@@ -1213,7 +1224,7 @@ export default {
     handleInspectionDxDescInputChange(inspection, value) {
       // 同步到原始数据
       const originalInspection = this.originalData.dispositionItem.find(
-        (p) => p.dispositionId === inspection.dispositionId,
+        (p) => p.dispositionId === inspection.dispositionId
       );
       if (originalInspection) {
         originalInspection.dxDesc = value;
@@ -1260,7 +1271,7 @@ export default {
             const files = Array.from(event.target.files);
             if (files.length + imgLength.length > 30) {
               this.$message.warning(
-                `最多只能上传30张图片，您已经选择了${imgLength.length}张，这次选择了${files.length}张`,
+                `最多只能上传30张图片，您已经选择了${imgLength.length}张，这次选择了${files.length}张`
               );
               return;
             }
@@ -1274,7 +1285,7 @@ export default {
             const files = Array.from(event.target.files);
             if (files.length + imgLength.length > 30) {
               this.$message.warning(
-                `最多只能上传30张图片，您已经选择了${imgLength.length}张，这次选择了${files.length}张`,
+                `最多只能上传30张图片，您已经选择了${imgLength.length}张，这次选择了${files.length}张`
               );
               return;
             }
@@ -1301,7 +1312,7 @@ export default {
           // 上传图片
           const serverUrl = await this.uploadSingleImage(
             base64Data,
-            questionId,
+            questionId
           );
           // 创建图片对象并添加到列表
           const newImage = {
