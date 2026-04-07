@@ -177,8 +177,22 @@
                 >
                 </el-input>
               </div>
-              <div class="problem-row">
-                <span class="problem-label">结论：</span>
+      <div class="problem-row" v-if="inspection.fileList && inspection.fileList.length > 0">
+              <span class="problem-label">文件：</span>
+              <div class="file-list">
+                <div
+                  v-for="(file, fileIndex) in inspection.fileList"
+                  :key="fileIndex"
+                  class="file-item"
+                  @click.stop="handleFilePreview(file)"
+                >
+                  <i :class="getFileIcon(file.name)"></i>
+                  <span class="file-name">{{ file.name }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="problem-row">
+              <span class="problem-label">结论：</span>
                 <div class="radio-group-container">
                   <el-radio-group
                     style="padding-top: 8px"
@@ -872,12 +886,22 @@ export default {
       this.inspectionList = (data.dispositionItem || []).map((item, index) => {
         // 根据status设置testAttribute
         let testAttribute = item.testAttribute === "OK" ? "OK" : "NG";
+        
+        // 解析文件
+        const fileNames = item.fileNames ? item.fileNames.split(',') : [];
+        const filePaths = item.filePaths ? item.filePaths.split(',') : [];
+        const fileList = fileNames.map((name, idx) => ({
+          name: name.trim(),
+          path: filePaths[idx] ? filePaths[idx].trim() : ''
+        })).filter(f => f.name && f.path);
+        
         return {
           ...item,
           index: index + 1,
           inspectionItem: item.dispositionDesc,
           testAttribute: testAttribute,
           pushStatus: 0,
+          fileList: fileList,
         };
       });
 
@@ -1438,6 +1462,40 @@ export default {
       const dx = touches[0].clientX - touches[1].clientX;
       const dy = touches[0].clientY - touches[1].clientY;
       return Math.sqrt(dx * dx + dy * dy);
+    },
+    // 根据文件类型返回不同图标
+    getFileIcon(fileName) {
+      const ext = fileName.split('.').pop().toLowerCase();
+      const iconMap = {
+        'pdf': 'el-icon-document',
+        'doc': 'el-icon-document',
+        'docx': 'el-icon-document',
+        'xls': 'el-icon-s-grid',
+        'xlsx': 'el-icon-s-grid',
+        'jpg': 'el-icon-picture',
+        'jpeg': 'el-icon-picture',
+        'png': 'el-icon-picture',
+        'gif': 'el-icon-picture'
+      };
+      return iconMap[ext] || 'el-icon-document';
+    },
+    // 判断是否为PDF文件
+    isPdfFile(fileName) {
+      const ext = fileName.split('.').pop().toLowerCase();
+      return ext === 'pdf';
+    },
+    // 判断是否为图片文件
+    isImageFile(fileName) {
+      const ext = fileName.split('.').pop().toLowerCase();
+      return ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(ext);
+    },
+    // 文件预览/下载
+    handleFilePreview(file) {
+      if (!file.path) {
+        this.$message.warning('文件路径不存在');
+        return;
+      }
+      window.open(file.path, '_blank');
     },
   },
 };
@@ -2230,5 +2288,41 @@ export default {
 .dialog-footer {
   text-align: right;
   padding-top: 20px;
+}
+
+/* 文件列表样式 */
+.file-list {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  .file-item {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    background: #f5f7fa;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+
+    i {
+      margin-right: 6px;
+      color: #409eff;
+    }
+
+    .file-name {
+      font-size: 14px;
+      color: #606266;
+    }
+
+    &:hover {
+      background: #e6f7ff;
+
+      .file-name {
+        color: #409eff;
+      }
+    }
+  }
 }
 </style>
