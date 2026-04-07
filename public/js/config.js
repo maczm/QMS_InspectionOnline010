@@ -171,60 +171,67 @@ window.getSelectionList = function (callback) {
 // 查询工位检验项列表
 window.dataItem = function (Level, callback) {
     console.log(Level, '检验项查询参数');
-    var data =
+    var data = {
+      code: "0",
+      msg: "查询成功",
+      orderStatus: 0,
+      workStation: "",
+      wipOrderNo: "8888888888",
+      productNo: "9999999999",
+      monthSequence: "8888-8888",
+      vin: "9999999999",
+      dispositionItem: [
         {
-            "code": "0",
-            "msg": "查询成功",
-            "orderStatus": 0,
-            "workStation": "",
-            "wipOrderNo": "8888888888",
-            "productNo": "9999999999",
-            "monthSequence": "8888-8888",
-            "vin": "9999999999",
-            "dispositionItem": [{
-                "dispositionId": 101,
-                "isConfig": 1,
-                "dispositionDesc": "1112121111111111111111111111111121211111111111111111111111",
-                "dxDesc": "11",
-                "testAttribute": "",
-                "testBy": "gw_wangzm26",
-                "isHandle": 1,
-                "handleReMark": "1",
-                "handImgs": "1",
-                "handleBy": "1",
-                "isClose": 1,
-                "confirmReMark": "1",
-                "confirmImgs": "1",
-                "confirmBy": "1"
-            }],
-            "questionItem": [{
-                "questionId": 201,
-                "question": "201",
-                "imgs": "",
-                "testBy": "gw_wangzm261",
-                "isHandle": 3,
-                "handleReMark": "3",
-                "handImgs": "3",
-                "handleBy": "3",
-                "isClose": 3,
-                "confirmReMark": "3",
-                "confirmImgs": "3",
-                "confirmBy": "3"
-            }, {
-                "questionId": 202,
-                "question": "202",
-                "imgs": "",
-                "testBy": "gw_wangzm26",
-                "isHandle": 4,
-                "handleReMark": "4",
-                "handImgs": "4",
-                "handleBy": "4",
-                "isClose": 4,
-                "confirmReMark": "4",
-                "confirmImgs": "4",
-                "confirmBy": "4"
-            }]
-        }
+          dispositionId: 101,
+          isConfig: 1,
+          dispositionDesc:
+            "1112121111111111111111111111111121211111111111111111111111",
+          dxDesc: "11",
+          testAttribute: "",
+          testBy: "gw_wangzm26",
+          isHandle: 1,
+          handleReMark: "1",
+          handImgs: "1",
+          handleBy: "1",
+          isClose: 1,
+          confirmReMark: "1",
+          confirmImgs: "1",
+          confirmBy: "1",
+          fileNames: "文件1,文件2",
+          filePaths: "/云畅通信，王子明2025.11-12月结算单 2026-01-26 09.38.pdf,/云畅通信，王子明2025.11-12月结算单 2026-01-26 09.38.pdf",
+        },
+      ],
+      questionItem: [
+        {
+          questionId: 201,
+          question: "201",
+          imgs: "",
+          testBy: "gw_wangzm261",
+          isHandle: 3,
+          handleReMark: "3",
+          handImgs: "3",
+          handleBy: "3",
+          isClose: 3,
+          confirmReMark: "3",
+          confirmImgs: "3",
+          confirmBy: "3",
+        },
+        {
+          questionId: 202,
+          question: "202",
+          imgs: "",
+          testBy: "gw_wangzm26",
+          isHandle: 4,
+          handleReMark: "4",
+          handImgs: "4",
+          handleBy: "4",
+          isClose: 4,
+          confirmReMark: "4",
+          confirmImgs: "4",
+          confirmBy: "4",
+        },
+      ],
+    };
     callback(data);
 };
 // 保存或提交
