@@ -154,15 +154,6 @@
                   v-if="!customDisable(inspection) && inspection.isConfig !== 1"
                 >
                 </el-button>
-                <el-button
-                  type="primary"
-                  size="small"
-                  @click="pushFeiShu(inspection, 'inspection')"
-                  class="push-btn"
-                  :disabled="inspection.pushStatus === 1"
-                >
-                  推送
-                </el-button>
               </div>
               <div class="problem-row">
                 <span class="problem-label">描述：</span>
@@ -268,15 +259,6 @@
                   class="remove-btn"
                   v-if="!customDisable(problem)"
                 >
-                </el-button>
-                <el-button
-                  type="primary"
-                  size="small"
-                  @click="pushFeiShu(problem, 'problem')"
-                  class="push-btn"
-                  :disabled="problem.pushStatus === 1"
-                >
-                  推送
                 </el-button>
               </div>
               <div class="problem-row">
@@ -630,7 +612,6 @@ export default {
       dialogProblemData: {},
       dialogProblemVisible: false,
       dialogIndex: -1,
-      pushFlag: false,
     };
   },
   mounted() {
@@ -700,12 +681,24 @@ export default {
           testDesc: this.dialogTestData.dxDesc,
           testResult: this.dialogTestData.testAttribute,
         };
+        console.log("单项保存检验项请求：", JSON.parse(JSON.stringify(saveData)));
         window.InspectionOnlineSingleSave(saveData, (res) => {
+          console.log("单项保存检验项响应：", JSON.parse(JSON.stringify(res)));
           this.inspectionList.find(
             (item) => item.dispositionId === saveData.id
           ).testBy = res.testBy;
         });
       } else if (type === "SaveQuestion") {
+        // 校验责任部门和责任人必填
+        if (!this.dialogProblemData.respTeam || !this.dialogProblemData.respEmployee) {
+          this.$message({
+            message: "责任部门和责任人必填",
+            type: "warning",
+            duration: 500,
+            showClose: true,
+          });
+          return;
+        }
         this.dialogProblemVisible = false;
         this.syncProblemData();
         saveData = {
@@ -716,19 +709,46 @@ export default {
           respTeam: this.dialogProblemData.respTeam,
           respEmployee: this.dialogProblemData.respEmployee,
         };
+        console.log("单项保存问题项请求：", JSON.parse(JSON.stringify(saveData)));
         window.InspectionOnlineSingleSave(saveData, (res) => {
+          console.log("单项保存问题项响应：", JSON.parse(JSON.stringify(res)));
           this.problemList.find(
             (item) => item.questionId === saveData.id
           ).testBy = res.testBy;
+          // 保存成功后推送飞书
+          const currentProblem = this.originalData.questionItem.find(
+            (item) => item.questionId === saveData.id
+          );
+          if (currentProblem && currentProblem.question !== "") {
+            const pushData = {
+              ...this.originalData,
+              questionItem: [currentProblem],
+              dispositionItem: [],
+            };
+            console.log("推送飞书请求：", JSON.parse(JSON.stringify(pushData)));
+            window.pushFeiShu(pushData, (pushRes) => {
+              console.log("推送飞书响应：", JSON.parse(JSON.stringify(pushRes)));
+              if (pushRes.code === "0") {
+                this.$message({
+                  message: "保存并推送成功",
+                  type: "success",
+                  duration: 500,
+                  showClose: true,
+                });
+              } else {
+                this.$message({
+                  message: "保存成功，推送失败",
+                  type: "warning",
+                  duration: 500,
+                  showClose: true,
+                });
+              }
+            });
+          }
         });
       }
-      console.log(saveData);
     },
     handleOpenDialog(item, index, type) {
-      if (this.pushFlag) {
-        this.pushFlag = false;
-        return;
-      }
       this.dialogIndex = index;
       if (type === "inspection") {
         this.dialogTestData = item;
@@ -739,75 +759,6 @@ export default {
         // 避免图片预览被覆盖
         this.dialogProblemVisible = this.dialogVisible !== true;
       }
-    },
-    // 推送飞书
-    pushFeiShu(data, type) {
-      this.pushFlag = true;
-      this.$msgbox({
-        title: "推送飞书",
-        message: "是否推送飞书？再次推送需要退出重进",
-        showCancelButton: true,
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      })
-        .then(() => {
-          this.syncProblemData();
-          let pushData = {
-            ...this.originalData,
-          };
-          if (type === "inspection") {
-            pushData = {
-              ...pushData,
-              dispositionItem: this.originalData.dispositionItem.filter(
-                (item) =>
-                  item.dispositionId === data.dispositionId &&
-                  item.testAttribute !== "OK" &&
-                  item.dxDesc !== "" &&
-                  item.dispositionDesc !== ""
-              ),
-              questionItem: [],
-            };
-            data.pushStatus = 1;
-          } else if (type === "problem") {
-            const currentProblem = this.originalData.questionItem.find(
-              (item) => item.questionId === data.questionId
-            );
-            pushData = {
-              ...pushData,
-              questionItem:
-                currentProblem && currentProblem.question !== ""
-                  ? [currentProblem]
-                  : [],
-              dispositionItem: [],
-            };
-            data.pushStatus = 1;
-          }
-          console.log(pushData, "推送飞书");
-          window.pushFeiShu(pushData, (res) => {
-            if (res.code === "0") {
-              this.$message({
-                message: "推送飞书成功",
-                type: "success",
-                duration: 500,
-                showClose: true,
-              });
-            } else {
-              this.$message({
-                message: "推送飞书失败",
-                type: "error",
-                duration: 500,
-                showClose: true,
-              });
-            }
-          });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消推送",
-          });
-        });
     },
     customDisable(item) {
       return (
@@ -847,8 +798,9 @@ export default {
     },
     // 查询检验项和问题
     getData(value) {
+      console.log("查询检验项和问题请求：", JSON.parse(JSON.stringify(value)));
       window.dataItem(value, (data) => {
-        console.log(data, "检验项和问题列表");
+        console.log("查询检验项和问题响应：", JSON.parse(JSON.stringify(data)));
         if (data.code === "0") {
           // 保存原始数据
           this.originalData = { ...data };
@@ -985,7 +937,6 @@ export default {
       if (originalItem) {
         originalItem.testAttribute = inspection.testAttribute;
       }
-      console.log(inspection);
     },
     // 设置表格最大高度
     setTableMaxHeight() {
@@ -998,9 +949,9 @@ export default {
         workStation: this.originalData.workStation,
         wipOrderNo: this.currentOrder,
       };
-
+      console.log("添加问题请求：", JSON.parse(JSON.stringify(params)));
       window.questionAdd(params, (response) => {
-        console.log(response, "添加接口返回的数据");
+        console.log("添加问题响应：", JSON.parse(JSON.stringify(response)));
         // 成功后，使用后端返回的数据创建新问题
         const serverProblem = {
           questionId: response.questionId,
@@ -1027,7 +978,6 @@ export default {
           this.originalData.questionItem = [];
         }
         this.originalData.questionItem.push({ ...serverProblem });
-        console.log(this.originalData.questionItem, "添加问题后的数据");
       });
     },
     // 删除问题
@@ -1036,9 +986,9 @@ export default {
         flag: "DelQuestion",
         questionId: question.questionId,
       };
-
-      console.log(params, "删除数据");
+      console.log("删除问题请求：", JSON.parse(JSON.stringify(params)));
       window.questionDel(params, (response) => {
+        console.log("删除问题响应：", JSON.parse(JSON.stringify(response)));
         // 使用 filter 方法删除，避免索引问题
         this.problemList = this.problemList.filter(
           (problem) => problem.questionId !== response.questionId
@@ -1050,7 +1000,6 @@ export default {
               (item) => item.questionId !== response.questionId
             );
         }
-        console.log(this.originalData.questionItem, "删除问题后的数据");
       });
     },
     // 新增检验项
@@ -1060,9 +1009,9 @@ export default {
         workStation: this.originalData.workStation,
         wipOrderNo: this.currentOrder,
       };
-
+      console.log("新增检验项请求：", JSON.parse(JSON.stringify(params)));
       window.inspectionAdd(params, (response) => {
-        console.log(response, "添加接口返回的数据");
+        console.log("新增检验项响应：", JSON.parse(JSON.stringify(response)));
         // 成功后，使用后端返回的数据创建新问题
         const serverInspection = {
           dispositionId: response.dispositionId,
@@ -1089,7 +1038,6 @@ export default {
           this.originalData.dispositionItem = [];
         }
         this.originalData.dispositionItem.push({ ...serverInspection });
-        console.log(this.originalData.dispositionItem, "添加问题后的数据");
       });
     },
     // 删除检验项
@@ -1098,8 +1046,9 @@ export default {
         flag: "DelTest",
         dispositionId: inspection.dispositionId,
       };
-      console.log(params, "删除数据");
+      console.log("删除检验项请求：", JSON.parse(JSON.stringify(params)));
       window.inspectionDel(params, (response) => {
+        console.log("删除检验项响应：", JSON.parse(JSON.stringify(response)));
         // 使用 filter 方法删除，避免索引问题
         this.inspectionList = this.inspectionList.filter(
           (inspection) => inspection.dispositionId !== response.dispositionId
@@ -1111,7 +1060,6 @@ export default {
               (item) => item.dispositionId !== response.dispositionId
             );
         }
-        console.log(this.originalData.dispositionItem, "删除问题后的数据");
       });
     },
     // 图片转Base64
@@ -1196,7 +1144,7 @@ export default {
           flag: "Save",
         };
 
-        console.log("保存数据:", JSON.stringify(saveData));
+        console.log("保存数据请求：", JSON.parse(JSON.stringify(saveData)));
 
         // 调用保存接口
         window.InspectionOnlineSaveAndSubmit(saveData, (response) => {
