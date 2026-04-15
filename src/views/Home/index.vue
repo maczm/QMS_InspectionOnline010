@@ -578,10 +578,8 @@ export default {
       Operator: "",
 
       // 新增数据
-      tableMaxHeight: 300,
       inspectionList: [],
       problemList: [],
-      nextProblemId: 1,
 
       respTeamOptions: [],
 
@@ -681,9 +679,9 @@ export default {
           testDesc: this.dialogTestData.dxDesc,
           testResult: this.dialogTestData.testAttribute,
         };
-        console.log("单项保存检验项请求：", JSON.parse(JSON.stringify(saveData)));
+
         window.InspectionOnlineSingleSave(saveData, (res) => {
-          console.log("单项保存检验项响应：", JSON.parse(JSON.stringify(res)));
+
           this.inspectionList.find(
             (item) => item.dispositionId === saveData.id
           ).testBy = res.testBy;
@@ -709,9 +707,9 @@ export default {
           respTeam: this.dialogProblemData.respTeam,
           respEmployee: this.dialogProblemData.respEmployee,
         };
-        console.log("单项保存问题项请求：", JSON.parse(JSON.stringify(saveData)));
+
         window.InspectionOnlineSingleSave(saveData, (res) => {
-          console.log("单项保存问题项响应：", JSON.parse(JSON.stringify(res)));
+
           this.problemList.find(
             (item) => item.questionId === saveData.id
           ).testBy = res.testBy;
@@ -725,9 +723,9 @@ export default {
               questionItem: [currentProblem],
               dispositionItem: [],
             };
-            console.log("推送飞书请求：", JSON.parse(JSON.stringify(pushData)));
+
             window.pushFeiShu(pushData, (pushRes) => {
-              console.log("推送飞书响应：", JSON.parse(JSON.stringify(pushRes)));
+
               if (pushRes.code === "0") {
                 this.$message({
                   message: "保存并推送成功",
@@ -784,7 +782,7 @@ export default {
               this.monthlySequence = res.data;
               this.handleMonthlySequenceSearch();
             } else {
-              console.log("未定义的扫码类型");
+
             }
           }
         });
@@ -798,9 +796,9 @@ export default {
     },
     // 查询检验项和问题
     getData(value) {
-      console.log("查询检验项和问题请求：", JSON.parse(JSON.stringify(value)));
+
       window.dataItem(value, (data) => {
-        console.log("查询检验项和问题响应：", JSON.parse(JSON.stringify(data)));
+
         if (data.code === "0") {
           // 保存原始数据
           this.originalData = { ...data };
@@ -949,9 +947,9 @@ export default {
         workStation: this.originalData.workStation,
         wipOrderNo: this.currentOrder,
       };
-      console.log("添加问题请求：", JSON.parse(JSON.stringify(params)));
+
       window.questionAdd(params, (response) => {
-        console.log("添加问题响应：", JSON.parse(JSON.stringify(response)));
+
         // 成功后，使用后端返回的数据创建新问题
         const serverProblem = {
           questionId: response.questionId,
@@ -986,9 +984,9 @@ export default {
         flag: "DelQuestion",
         questionId: question.questionId,
       };
-      console.log("删除问题请求：", JSON.parse(JSON.stringify(params)));
+
       window.questionDel(params, (response) => {
-        console.log("删除问题响应：", JSON.parse(JSON.stringify(response)));
+
         // 使用 filter 方法删除，避免索引问题
         this.problemList = this.problemList.filter(
           (problem) => problem.questionId !== response.questionId
@@ -1009,9 +1007,9 @@ export default {
         workStation: this.originalData.workStation,
         wipOrderNo: this.currentOrder,
       };
-      console.log("新增检验项请求：", JSON.parse(JSON.stringify(params)));
+
       window.inspectionAdd(params, (response) => {
-        console.log("新增检验项响应：", JSON.parse(JSON.stringify(response)));
+
         // 成功后，使用后端返回的数据创建新问题
         const serverInspection = {
           dispositionId: response.dispositionId,
@@ -1046,9 +1044,9 @@ export default {
         flag: "DelTest",
         dispositionId: inspection.dispositionId,
       };
-      console.log("删除检验项请求：", JSON.parse(JSON.stringify(params)));
+
       window.inspectionDel(params, (response) => {
-        console.log("删除检验项响应：", JSON.parse(JSON.stringify(response)));
+
         // 使用 filter 方法删除，避免索引问题
         this.inspectionList = this.inspectionList.filter(
           (inspection) => inspection.dispositionId !== response.dispositionId
@@ -1175,7 +1173,7 @@ export default {
           flag: "Save",
         };
 
-        console.log("保存数据请求：", JSON.parse(JSON.stringify(saveData)));
+
 
         // 调用保存接口
         window.InspectionOnlineSaveAndSubmit(saveData, (response) => {
@@ -1196,7 +1194,7 @@ export default {
           }
         });
       } catch (error) {
-        console.error("保存失败:", error);
+
         this.$message({
           message: "保存失败: " + error.message,
           type: "error",
@@ -1363,7 +1361,7 @@ export default {
           showClose: true,
         });
       } catch (error) {
-        console.error("图片上传失败:", error);
+
         this.$message({
           message: "图片上传失败: " + error.message,
           type: "error",
@@ -1459,15 +1457,7 @@ export default {
       return iconMap[ext] || 'el-icon-document';
     },
     // 判断是否为PDF文件
-    isPdfFile(fileName) {
-      const ext = fileName.split('.').pop().toLowerCase();
-      return ext === 'pdf';
-    },
     // 判断是否为图片文件
-    isImageFile(fileName) {
-      const ext = fileName.split('.').pop().toLowerCase();
-      return ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(ext);
-    },
     // 文件预览/下载
     handleFilePreview(file) {
       if (!file.path) {
