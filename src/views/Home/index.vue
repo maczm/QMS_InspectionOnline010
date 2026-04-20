@@ -298,32 +298,21 @@
                 </el-input>
               </div>
               <div class="problem-row">
-                <span class="problem-label">责任班组：</span>
+                <span class="problem-label">责任工作中心：</span>
                 <el-select
-                  v-model="problem.respTeam"
+                  v-model="problem.respWorkCenter"
                   filterable
                   disabled
                   size="small"
                 >
                   <el-option
-                    v-for="item in respTeamOptions"
+                    v-for="item in respWorkCenterOptions"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
                   >
                   </el-option>
                 </el-select>
-              </div>
-              <div class="problem-row">
-                <span class="problem-label">责任人：</span>
-                <el-input
-                  v-model="problem.respEmployee"
-                  class="problem-input"
-                  :disabled="true"
-                  type="textarea"
-                  autosize
-                >
-                </el-input>
               </div>
             </div>
           </div>
@@ -518,33 +507,21 @@
         </el-input>
       </div>
       <div class="problem-row">
-        <span class="problem-label">责任班组：</span>
+        <span class="problem-label">责任工作中心：</span>
         <el-select
-          v-model="dialogProblemData.respTeam"
+          v-model="dialogProblemData.respWorkCenter"
           size="small"
           clearable
-          @change="onRespTeamChange(dialogProblemData)"
+          :disabled="customDisable(dialogProblemData)"
         >
           <el-option
-            v-for="item in respTeamOptions"
+            v-for="item in respWorkCenterOptions"
             :key="item.value"
             :label="item.label"
             :value="item.value"
           >
           </el-option>
         </el-select>
-      </div>
-      <div class="problem-row">
-        <span class="problem-label">责任人：</span>
-        <el-input
-          v-model="dialogProblemData.respEmployee"
-          class="problem-input"
-          type="textarea"
-          autosize
-          :disabled="customDisable(dialogProblemData)"
-          v-keyboard-focus
-        >
-        </el-input>
       </div>
       <div class="fixed-action-buttons">
         <el-button
@@ -581,7 +558,7 @@ export default {
       inspectionList: [],
       problemList: [],
 
-      respTeamOptions: [],
+      respWorkCenterOptions: [],
 
       // 图片预览对话框
       dialogImageUrl: "",
@@ -613,8 +590,8 @@ export default {
     };
   },
   mounted() {
-    window.getRespTeam((res) => {
-      this.respTeamOptions = res;
+    window.getRespWorkCenter((res) => {
+      this.respWorkCenterOptions = res;
     });
     this.isApp = this.isAppEnvironment();
     // 设置表格最大高度为屏幕的1/3
@@ -651,23 +628,6 @@ export default {
     },
   },
   methods: {
-    // 根据选择的班组自动带出责任人
-    onRespTeamChange(problemData) {
-      if (!problemData.respTeam) {
-        problemData.respEmployee = "";
-        return;
-      }
-
-      // 查找对应的班组数据
-      const selectedTeam = this.respTeamOptions.find(
-        (team) => team.value === problemData.respTeam
-      );
-      if (selectedTeam && selectedTeam.employee) {
-        problemData.respEmployee = selectedTeam.employee;
-      } else {
-        problemData.respEmployee = "";
-      }
-    },
     handleCloseDialog(type) {
       let saveData = {};
       if (type === "SaveInspection") {
@@ -687,10 +647,10 @@ export default {
           ).testBy = res.testBy;
         });
       } else if (type === "SaveQuestion") {
-        // 校验责任部门和责任人必填
-        if (!this.dialogProblemData.respTeam || !this.dialogProblemData.respEmployee) {
+        // 校验责任中心必填
+        if (!this.dialogProblemData.respWorkCenter) {
           this.$message({
-            message: "责任部门和责任人必填",
+            message: "责任中心必填",
             type: "warning",
             duration: 500,
             showClose: true,
@@ -704,8 +664,7 @@ export default {
           id: this.dialogProblemData.questionId,
           name: this.dialogProblemData.question,
           questionImg: this.dialogProblemData.imgs,
-          respTeam: this.dialogProblemData.respTeam,
-          respEmployee: this.dialogProblemData.respEmployee,
+          respWorkCenter: this.dialogProblemData.respWorkCenter,
         };
 
         window.InspectionOnlineSingleSave(saveData, (res) => {
@@ -868,8 +827,7 @@ export default {
 
         return {
           ...item,
-          respTeam: item.respTeam || "",
-          respEmployee: item.respEmployee || "",
+          respWorkCenter: item.respWorkCenter || "",
           imageList: imageList,
           pushStatus: 0,
         };
@@ -955,8 +913,7 @@ export default {
           questionId: response.questionId,
           question: "",
           imgs: "",
-          respTeam: "",
-          respEmployee: "",
+          respWorkCenter: "",
           testBy: response.testBy,
           isHandle: 0,
           handleReMark: "",
@@ -1214,8 +1171,7 @@ export default {
           questionId: problem.questionId,
           question: problem.question,
           imgs: problem.imgs,
-          respTeam: problem.respTeam,
-          respEmployee: problem.respEmployee,
+          respWorkCenter: problem.respWorkCenter,
           imageList: problem.imageList,
           // 保留其他字段
           testBy: problem.testBy || originalProblem.testBy,
