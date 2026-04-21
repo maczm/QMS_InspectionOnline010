@@ -558,7 +558,14 @@ export default {
       inspectionList: [],
       problemList: [],
 
-      respWorkCenterOptions: [],
+      respWorkCenterOptions: [
+        { value: '冲焊工作中心', label: '冲焊工作中心' },
+        { value: '涂装工作中心', label: '涂装工作中心' },
+        { value: '调试工作中心', label: '调试工作中心' },
+        { value: '驾驶室工作中心', label: '驾驶室工作中心' },
+        { value: '底盘分装工作中心', label: '底盘分装工作中心' },
+        { value: '底盘装配工作中心', label: '底盘装配工作中心' },
+      ],
 
       // 图片预览对话框
       dialogImageUrl: "",
@@ -590,9 +597,6 @@ export default {
     };
   },
   mounted() {
-    window.getRespWorkCenter((res) => {
-      this.respWorkCenterOptions = res;
-    });
     this.isApp = this.isAppEnvironment();
     // 设置表格最大高度为屏幕的1/3
     this.setTableMaxHeight();
