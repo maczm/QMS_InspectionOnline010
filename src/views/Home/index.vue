@@ -661,7 +661,6 @@ export default {
           });
           return;
         }
-        this.dialogProblemVisible = false;
         this.syncProblemData();
         saveData = {
           flag: type,
@@ -672,38 +671,57 @@ export default {
         };
 
         window.InspectionOnlineSingleSave(saveData, (res) => {
+          // 校验保存是否成功
+          if (res.code === "0") {
+            // 保存成功，关闭编辑框
+            this.dialogProblemVisible = false;
+            this.problemList.find(
+              (item) => item.questionId === saveData.id
+            ).testBy = res.testBy;
+            // 保存成功后推送飞书
+            const currentProblem = this.originalData.questionItem.find(
+              (item) => item.questionId === saveData.id
+            );
+            if (currentProblem && currentProblem.question !== "") {
+              const pushData = {
+                ...this.originalData,
+                questionItem: [currentProblem],
+                dispositionItem: [],
+              };
 
-          this.problemList.find(
-            (item) => item.questionId === saveData.id
-          ).testBy = res.testBy;
-          // 保存成功后推送飞书
-          const currentProblem = this.originalData.questionItem.find(
-            (item) => item.questionId === saveData.id
-          );
-          if (currentProblem && currentProblem.question !== "") {
-            const pushData = {
-              ...this.originalData,
-              questionItem: [currentProblem],
-              dispositionItem: [],
-            };
+              window.pushFeiShu(pushData, (pushRes) => {
 
-            window.pushFeiShu(pushData, (pushRes) => {
-
-              if (pushRes.code === "0") {
-                this.$message({
-                  message: "保存并推送成功",
-                  type: "success",
-                  duration: 500,
-                  showClose: true,
-                });
-              } else {
-                this.$message({
-                  message: "保存成功，推送失败",
-                  type: "warning",
-                  duration: 500,
-                  showClose: true,
-                });
-              }
+                if (pushRes.code === "0") {
+                  this.$message({
+                    message: "保存并推送成功",
+                    type: "success",
+                    duration: 500,
+                    showClose: true,
+                  });
+                } else {
+                  this.$message({
+                    message: "保存成功，推送失败",
+                    type: "warning",
+                    duration: 500,
+                    showClose: true,
+                  });
+                }
+              });
+            } else {
+              this.$message({
+                message: "保存成功",
+                type: "success",
+                duration: 500,
+                showClose: true,
+              });
+            }
+          } else {
+            // 保存失败，编辑框不关闭，显示错误原因
+            this.$message({
+              message: res.msg || "保存失败",
+              type: "error",
+              duration: 3000,
+              showClose: true,
             });
           }
         });
