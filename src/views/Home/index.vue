@@ -168,22 +168,25 @@
                 >
                 </el-input>
               </div>
-      <div class="problem-row" v-if="inspection.fileList && inspection.fileList.length > 0">
-              <span class="problem-label">文件：</span>
-              <div class="file-list">
-                <div
-                  v-for="(file, fileIndex) in inspection.fileList"
-                  :key="fileIndex"
-                  class="file-item"
-                  @click.stop="handleFilePreview(file)"
-                >
-                  <i :class="getFileIcon(file.name)"></i>
-                  <span class="file-name">{{ file.name }}</span>
+              <div
+                class="problem-row"
+                v-if="inspection.fileList && inspection.fileList.length > 0"
+              >
+                <span class="problem-label">文件：</span>
+                <div class="file-list">
+                  <div
+                    v-for="(file, fileIndex) in inspection.fileList"
+                    :key="fileIndex"
+                    class="file-item"
+                    @click.stop="handleFilePreview(file)"
+                  >
+                    <i :class="getFileIcon(file.name)"></i>
+                    <span class="file-name">{{ file.name }}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="problem-row">
-              <span class="problem-label">结论：</span>
+              <div class="problem-row">
+                <span class="problem-label">结论：</span>
                 <div class="radio-group-container">
                   <el-radio-group
                     style="padding-top: 8px"
@@ -559,12 +562,12 @@ export default {
       problemList: [],
 
       respWorkCenterOptions: [
-        { value: '冲焊工作中心', label: '冲焊工作中心' },
-        { value: '涂装工作中心', label: '涂装工作中心' },
-        { value: '调试工作中心', label: '调试工作中心' },
-        { value: '驾驶室工作中心', label: '驾驶室工作中心' },
-        { value: '底盘分装工作中心', label: '底盘分装工作中心' },
-        { value: '底盘装配工作中心', label: '底盘装配工作中心' },
+        { value: "冲焊工作中心", label: "冲焊工作中心" },
+        { value: "涂装工作中心", label: "涂装工作中心" },
+        { value: "调试工作中心", label: "调试工作中心" },
+        { value: "驾驶室工作中心", label: "驾驶室工作中心" },
+        { value: "底盘分装工作中心", label: "底盘分装工作中心" },
+        { value: "底盘装配工作中心", label: "底盘装配工作中心" },
       ],
 
       // 图片预览对话框
@@ -645,7 +648,6 @@ export default {
         };
 
         window.InspectionOnlineSingleSave(saveData, (res) => {
-
           this.inspectionList.find(
             (item) => item.dispositionId === saveData.id
           ).testBy = res.testBy;
@@ -690,7 +692,6 @@ export default {
               };
 
               window.pushFeiShu(pushData, (pushRes) => {
-
                 if (pushRes.code === "0") {
                   this.$message({
                     message: "保存并推送成功",
@@ -763,7 +764,6 @@ export default {
               this.monthlySequence = res.data;
               this.handleMonthlySequenceSearch();
             } else {
-
             }
           }
         });
@@ -777,9 +777,7 @@ export default {
     },
     // 查询检验项和问题
     getData(value) {
-
       window.dataItem(value, (data) => {
-
         if (data.code === "0") {
           // 保存原始数据
           this.originalData = { ...data };
@@ -817,15 +815,17 @@ export default {
       this.inspectionList = (data.dispositionItem || []).map((item, index) => {
         // 根据status设置testAttribute
         let testAttribute = item.testAttribute === "OK" ? "OK" : "NG";
-        
+
         // 解析文件
-        const fileNames = item.fileNames ? item.fileNames.split(',') : [];
-        const filePaths = item.filePaths ? item.filePaths.split(',') : [];
-        const fileList = fileNames.map((name, idx) => ({
-          name: name.trim(),
-          path: filePaths[idx] ? filePaths[idx].trim() : ''
-        })).filter(f => f.name && f.path);
-        
+        const fileNames = item.fileNames ? item.fileNames.split(",") : [];
+        const filePaths = item.filePaths ? item.filePaths.split(",") : [];
+        const fileList = fileNames
+          .map((name, idx) => ({
+            name: name.trim(),
+            path: filePaths[idx] ? filePaths[idx].trim() : "",
+          }))
+          .filter((f) => f.name && f.path);
+
         return {
           ...item,
           index: index + 1,
@@ -929,7 +929,6 @@ export default {
       };
 
       window.questionAdd(params, (response) => {
-
         // 成功后，使用后端返回的数据创建新问题
         const serverProblem = {
           questionId: response.questionId,
@@ -965,7 +964,6 @@ export default {
       };
 
       window.questionDel(params, (response) => {
-
         // 使用 filter 方法删除，避免索引问题
         this.problemList = this.problemList.filter(
           (problem) => problem.questionId !== response.questionId
@@ -988,7 +986,6 @@ export default {
       };
 
       window.inspectionAdd(params, (response) => {
-
         // 成功后，使用后端返回的数据创建新问题
         const serverInspection = {
           dispositionId: response.dispositionId,
@@ -1025,7 +1022,6 @@ export default {
       };
 
       window.inspectionDel(params, (response) => {
-
         // 使用 filter 方法删除，避免索引问题
         this.inspectionList = this.inspectionList.filter(
           (inspection) => inspection.dispositionId !== response.dispositionId
@@ -1040,7 +1036,7 @@ export default {
       });
     },
     // 图片压缩
-    compressImage(file, maxWidth = 2048, maxHeight = 2048, quality = 0.90) {
+    compressImage(file, maxWidth = 2048, maxHeight = 2048, quality = 0.9) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
@@ -1051,27 +1047,34 @@ export default {
             // 计算压缩后的尺寸
             let width = img.width;
             let height = img.height;
-            
+
             if (width > maxWidth || height > maxHeight) {
               const ratio = Math.min(maxWidth / width, maxHeight / height);
               width = Math.floor(width * ratio);
               height = Math.floor(height * ratio);
             }
-            
+
             // 创建canvas进行压缩
-            const canvas = document.createElement('canvas');
+            const canvas = document.createElement("canvas");
             canvas.width = width;
             canvas.height = height;
-            const ctx = canvas.getContext('2d');
+            const ctx = canvas.getContext("2d");
             ctx.drawImage(img, 0, 0, width, height);
-            
+
             // 转为JPEG格式的base64
-            const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
-            console.log("图片压缩请求：", JSON.parse(JSON.stringify({
-              原始尺寸: `${img.width}x${img.height}`,
-              压缩后尺寸: `${width}x${height}`,
-              压缩后大小: `${(compressedBase64.length / 1024).toFixed(1)}KB`
-            })));
+            const compressedBase64 = canvas.toDataURL("image/jpeg", quality);
+            console.log(
+              "图片压缩请求：",
+              JSON.parse(
+                JSON.stringify({
+                  原始尺寸: `${img.width}x${img.height}`,
+                  压缩后尺寸: `${width}x${height}`,
+                  压缩后大小: `${(compressedBase64.length / 1024).toFixed(
+                    1
+                  )}KB`,
+                })
+              )
+            );
             resolve(compressedBase64);
           };
           img.onerror = (error) => reject(error);
@@ -1152,8 +1155,6 @@ export default {
           flag: "Save",
         };
 
-
-
         // 调用保存接口
         window.InspectionOnlineSaveAndSubmit(saveData, (response) => {
           if (response.code === "0") {
@@ -1173,7 +1174,6 @@ export default {
           }
         });
       } catch (error) {
-
         this.$message({
           message: "保存失败: " + error.message,
           type: "error",
@@ -1240,27 +1240,44 @@ export default {
     },
     // 移动端图片上传处理
     handleMobileUpload(questionId) {
-      // 创建两个文件输入元素
       const fileInputCamera = document.createElement("input");
       fileInputCamera.type = "file";
       fileInputCamera.accept = "image/*";
-      fileInputCamera.capture = "environment"; // 强制使用相机
-      // 设置z-index为最高层级
+      fileInputCamera.capture = "environment";
       fileInputCamera.style.position = "fixed";
       fileInputCamera.style.zIndex = "9999";
-
-      const fileInputGallery = document.createElement("input");
-      fileInputGallery.type = "file";
-      fileInputGallery.accept = "image/*";
-      fileInputGallery.multiple = true;
-      // 设置z-index为最高层级
-      fileInputGallery.style.position = "fixed";
-      fileInputGallery.style.zIndex = "9999";
 
       const imgLength =
         this.problemList
           .find((problem) => problem.questionId === questionId)
           ?.imgs?.split(",") || [];
+
+      const triggerCamera = () => {
+        fileInputCamera.onchange = async (event) => {
+          const files = Array.from(event.target.files);
+          if (files.length + imgLength.length > 30) {
+            this.$message.warning(
+              `最多只能上传30张图片，您已经选择了${imgLength.length}张，这次选择了${files.length}张`
+            );
+            return;
+          }
+          await this.processSelectedFiles(files, questionId);
+        };
+        fileInputCamera.click();
+      };
+
+      // Android 直接拍照
+      if (/android/i.test(navigator.userAgent)) {
+        triggerCamera();
+        return;
+      }
+
+      const fileInputGallery = document.createElement("input");
+      fileInputGallery.type = "file";
+      fileInputGallery.accept = "image/*";
+      fileInputGallery.multiple = true;
+      fileInputGallery.style.position = "fixed";
+      fileInputGallery.style.zIndex = "9999";
 
       // 显示选择对话框
       this.$msgbox({
@@ -1274,21 +1291,9 @@ export default {
         cancelButtonText: "从相册选择",
       })
         .then(() => {
-          // 用户选择拍照
-          fileInputCamera.onchange = async (event) => {
-            const files = Array.from(event.target.files);
-            if (files.length + imgLength.length > 30) {
-              this.$message.warning(
-                `最多只能上传30张图片，您已经选择了${imgLength.length}张，这次选择了${files.length}张`
-              );
-              return;
-            }
-            await this.processSelectedFiles(files, questionId);
-          };
-          fileInputCamera.click();
+          triggerCamera();
         })
         .catch(() => {
-          // 用户选择从相册选择
           fileInputGallery.onchange = async (event) => {
             const files = Array.from(event.target.files);
             if (files.length + imgLength.length > 30) {
@@ -1339,7 +1344,6 @@ export default {
           showClose: true,
         });
       } catch (error) {
-
         this.$message({
           message: "图片上传失败: " + error.message,
           type: "error",
@@ -1420,29 +1424,29 @@ export default {
     },
     // 根据文件类型返回不同图标
     getFileIcon(fileName) {
-      const ext = fileName.split('.').pop().toLowerCase();
+      const ext = fileName.split(".").pop().toLowerCase();
       const iconMap = {
-        'pdf': 'el-icon-document',
-        'doc': 'el-icon-document',
-        'docx': 'el-icon-document',
-        'xls': 'el-icon-s-grid',
-        'xlsx': 'el-icon-s-grid',
-        'jpg': 'el-icon-picture',
-        'jpeg': 'el-icon-picture',
-        'png': 'el-icon-picture',
-        'gif': 'el-icon-picture'
+        pdf: "el-icon-document",
+        doc: "el-icon-document",
+        docx: "el-icon-document",
+        xls: "el-icon-s-grid",
+        xlsx: "el-icon-s-grid",
+        jpg: "el-icon-picture",
+        jpeg: "el-icon-picture",
+        png: "el-icon-picture",
+        gif: "el-icon-picture",
       };
-      return iconMap[ext] || 'el-icon-document';
+      return iconMap[ext] || "el-icon-document";
     },
     // 判断是否为PDF文件
     // 判断是否为图片文件
     // 文件预览/下载
     handleFilePreview(file) {
       if (!file.path) {
-        this.$message.warning('文件路径不存在');
+        this.$message.warning("文件路径不存在");
         return;
       }
-      window.open(file.path, '_blank');
+      window.open(file.path, "_blank");
     },
   },
 };
