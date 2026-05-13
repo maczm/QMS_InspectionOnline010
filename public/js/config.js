@@ -276,12 +276,14 @@ window.InspectionOnlineSingleSave = function (data, callback) {
     callback(obj)
 }
 
-window.getRespWorkCenter = function (callback) {
+window.getRespTeam = function (callback) {
   let obj = [
-    { value: "WC001", label: "焊装车间" },
-    { value: "WC002", label: "涂装车间" },
-    { value: "WC003", label: "总装车间" },
-    { value: "WC004", label: "质检中心" },
+    { value: "冲焊班组", label: "冲焊班组", employee: "gw_wangzm26" },
+    { value: "涂装班组", label: "涂装班组", employee: "" },
+    { value: "调试班组", label: "调试班组", employee: "" },
+    { value: "驾驶室班组", label: "驾驶室班组", employee: "" },
+    { value: "底盘分装班组", label: "底盘分装班组", employee: "" },
+    { value: "底盘装配班组", label: "底盘装配班组", employee: "" },
   ];
   callback(obj);
 };
