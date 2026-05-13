@@ -149,7 +149,7 @@
                   type="danger"
                   icon="el-icon-minus"
                   size="small"
-                  @click="removeInspection(inspection)"
+                  @click.stop="removeInspection(inspection)"
                   class="remove-btn"
                   v-if="!customDisable(inspection) && inspection.isConfig !== 1"
                 >
@@ -258,7 +258,7 @@
                   type="danger"
                   icon="el-icon-minus"
                   size="small"
-                  @click="removeProblem(problem)"
+                  @click.stop="removeProblem(problem)"
                   class="remove-btn"
                   v-if="!customDisable(problem)"
                 >
