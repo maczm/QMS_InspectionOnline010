@@ -687,10 +687,10 @@ export default {
           ).testBy = res.testBy;
         });
       } else if (type === "SaveQuestion") {
-        // 校验责任部门和责任人必填
+        // 校验责任班组和责任人必填
         if (!this.dialogProblemData.respTeam || !this.dialogProblemData.respEmployee) {
           this.$message({
-            message: "责任部门和责任人必填",
+            message: "责任班组和责任人必填",
             type: "warning",
             duration: 500,
             showClose: true,
