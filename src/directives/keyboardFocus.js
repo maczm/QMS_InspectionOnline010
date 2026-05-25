@@ -24,10 +24,18 @@ export default {
             const scrollAmount = elementBottom - viewportHeight * 0.5;
 
             // 平滑滚动
-            window.scrollBy({
-              top: scrollAmount,
-              behavior: "smooth",
-            });
+            const container = element.closest('.inspection-container');
+            if (container) {
+              container.scrollBy({
+                top: scrollAmount,
+                behavior: "smooth",
+              });
+            } else {
+              window.scrollBy({
+                top: scrollAmount,
+                behavior: "smooth",
+              });
+            }
           }
         }
       }, 300); // 延迟时间，等待键盘完全弹起

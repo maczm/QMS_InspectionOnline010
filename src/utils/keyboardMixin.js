@@ -78,19 +78,27 @@ export default {
 
     // 将输入框滚动到可视区域
     scrollInputIntoView(element) {
-      // 获取元素相对于视窗的位置
+      const container = document.querySelector('.inspection-container');
       const elementRect = element.getBoundingClientRect();
-      const absoluteElementTop = elementRect.top + window.pageYOffset;
+      const scrollTop = container ? container.scrollTop : window.pageYOffset;
+      const absoluteElementTop = elementRect.top + scrollTop;
       const middlePosition = absoluteElementTop - window.innerHeight / 2;
 
       // 添加偏移量确保元素在键盘上方可见
       const offsetPosition = middlePosition - 100;
 
       // 平滑滚动到指定位置
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      });
+      if (container) {
+        container.scrollTo({
+          top: offsetPosition,
+          behavior: "smooth",
+        });
+      } else {
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: "smooth",
+        });
+      }
     },
   },
 };
