@@ -563,14 +563,7 @@ export default {
       inspectionList: [],
       problemList: [],
 
-      respWorkCenterOptions: [
-        { value: '冲焊工作中心', label: '冲焊工作中心' },
-        { value: '涂装工作中心', label: '涂装工作中心' },
-        { value: '调试工作中心', label: '调试工作中心' },
-        { value: '驾驶室工作中心', label: '驾驶室工作中心' },
-        { value: '底盘分装工作中心', label: '底盘分装工作中心' },
-        { value: '底盘装配工作中心', label: '底盘装配工作中心' },
-      ],
+      respWorkCenterOptions: window.respWorkCenterOptions || [],
 
       // 图片预览对话框
       dialogImageUrl: "",

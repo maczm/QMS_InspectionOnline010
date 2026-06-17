@@ -276,14 +276,16 @@ window.InspectionOnlineSingleSave = function (data, callback) {
     callback(obj)
 }
 
+window.respWorkCenterOptions = [
+  { value: "冲焊工作中心", label: "冲焊工作中心", employee: "gw_wangzm26" },
+  { value: "涂装工作中心", label: "涂装工作中心", employee: "" },
+  { value: "调试工作中心", label: "调试工作中心", employee: "" },
+  { value: "驾驶室工作中心", label: "驾驶室工作中心", employee: "" },
+  { value: "底盘分装工作中心", label: "底盘分装工作中心", employee: "" },
+  { value: "底盘装配工作中心", label: "底盘装配工作中心", employee: "" },
+  { value: "质量部门-孟湋淇", label: "质量部门-孟湋淇", employee: "" },
+]
+
 window.getRespTeam = function (callback) {
-  let obj = [
-    { value: "冲焊班组", label: "冲焊班组", employee: "gw_wangzm26" },
-    { value: "涂装班组", label: "涂装班组", employee: "" },
-    { value: "调试班组", label: "调试班组", employee: "" },
-    { value: "驾驶室班组", label: "驾驶室班组", employee: "" },
-    { value: "底盘分装班组", label: "底盘分装班组", employee: "" },
-    { value: "底盘装配班组", label: "底盘装配班组", employee: "" },
-  ];
-  callback(obj);
+  callback(window.respWorkCenterOptions);
 };
