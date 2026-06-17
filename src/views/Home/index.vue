@@ -718,7 +718,7 @@ export default {
           }
           window.InspectionOnlineSingleSave(saveData, (res) => {
             // 校验保存是否成功
-            if (res.code === "0") {
+            if (res.code == "0") {
               // 保存成功，关闭编辑框
               this.dialogProblemVisible = false;
               this.problemList.find(
@@ -738,7 +738,7 @@ export default {
                 try {
                   if (typeof window.pushFeiShu === 'function') {
                     window.pushFeiShu(pushData, (pushRes) => {
-                      if (pushRes.code === "0") {
+                      if (pushRes.code == "0") {
                         this.$message({
                           message: "保存并推送成功",
                           type: "success",
@@ -871,7 +871,7 @@ export default {
         }
         window.dataItem(value, (data) => {
           loading.close();
-          if (data.code === "0") {
+          if (data.code == "0") {
             // 保存原始数据
             this.originalData = { ...data };
             // 剔除code和msg
@@ -1396,7 +1396,7 @@ export default {
         // 调用保存接口
         window.InspectionOnlineSaveAndSubmit(saveData, (response) => {
           loading.close();
-          if (response.code === "0") {
+          if (response.code == "0") {
             this.$message({
               message: "数据保存成功",
               type: "success",
