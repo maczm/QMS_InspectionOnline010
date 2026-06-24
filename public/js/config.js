@@ -177,9 +177,9 @@ window.dataItem = function (Level, callback) {
       orderStatus: 0,
       workStation: "",
       wipOrderNo: "8888888888",
-      productNo: "9999999999",
+      productNo: "1234567890asdfghjkl",
       monthSequence: "8888-8888",
-      vin: "9999999999",
+      vin: "1234567890asdfghjkl",
       dispositionItem: [
         {
           dispositionId: 101,
